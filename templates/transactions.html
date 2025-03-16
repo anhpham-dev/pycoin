@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - PyC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        .transaction-row:hover {
+            background-color: #f8f9fa;
+        }
+        .mining-reward {
+            background-color: #e8f4ff;
+        }
+        .table-responsive {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .sent {
+            color: #dc3545;
+        }
+        .received {
+            color: #198754;
+        }
+        .timestamp {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/dashboard">PyCoin</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/send">Send</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/transactions">Transactions</a>
+                        </li>
+                    </ul>
+                </div>
+                <span class="navbar-text">
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+                </span>
+            </div>
+        </nav>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Transaction History</h2>
+                    </div>
+                    <div class="card-body">
+                        {% if transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date/Time</th>
+                                        <th>Transaction ID</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Amount</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tx in transactions %}
+                                    <tr class="transaction-row {% if tx.sender == 'MINING_REWARD' %}mining-reward{% endif %}">
+                                        <td class="timestamp" data-timestamp="{{ tx.timestamp }}"></td>
+                                        <td><span class="small">{{ tx.id[:8] }}...</span></td>
+                                        <td>
+                                            {% if tx.sender == 'MINING_REWARD' %}
+                                                <span class="badge bg-info">Mining Reward</span>
+                                            {% else %}
+                                                {{ tx.sender_username }} <br>
+                                                <span class="small text-muted">{{ tx.sender[:8] }}...</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ tx.receiver_username }} <br>
+                                            <span class="small text-muted">{{ tx.receiver[:8] }}...</span>
+                                        </td>
+                                        <td class="{% if tx.sender == 'MINING_REWARD' %}received{% endif %}">
+                                            <strong>{{ tx.amount }}</strong> PyC
+                                        </td>
+                                        <td>{{ tx.description }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            No transactions recorded yet.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Format timestamps on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.timestamp').forEach(function(el) {
+                const timestamp = parseFloat(el.getAttribute('data-timestamp'));
+                if (!isNaN(timestamp)) {
+                    const date = new Date(timestamp * 1000);
+                    el.textContent = date.toLocaleString();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

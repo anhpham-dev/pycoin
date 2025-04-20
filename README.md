@@ -48,7 +48,7 @@ The server will start on `http://0.0.0.0:5000/` by default.
 3. Open a terminal or command prompt and navigate to the mining client directory.
 4. Run the mining client with:
    ```sh
-   python miner.py --address <your-wallet> --worker <your-worker-name> --serverurl https://62d1-27-64-57-130.ngrok-free.app
+   python miner.py --address <your-wallet> --worker <your-worker-name> --serverurl <your host>
    ```
 
 ## Hashrate Measurement
